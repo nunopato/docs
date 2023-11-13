@@ -1,29 +1,30 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Documentation",
+  "openapi": ["./api-reference/openapi-auth.yaml", "./api-reference/openapi-storage.yaml"],
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
+    "primary": "#3787ff",
+    "light": "#569aff",
+    "dark": "#1874ff",
     "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
+      "from": "#1874ff",
+      "to": "#569aff"
     }
   },
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:support@nhost.io"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "url": "https://app.nhost.io"
   },
   "tabs": [
     {
@@ -35,44 +36,136 @@
     {
       "name": "Documentation",
       "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "url": "/introduction"
     },
     {
       "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "icon": "discord",
+      "url": "https://discord.com/nhost"
     },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://nhost.io/blog"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
-      "pages": ["introduction", "quickstart", "development"]
+      "group": "Overview",
+      "pages": ["introduction", "development"]
     },
     {
-      "group": "Essentials",
-      "pages": ["essentials/markdown", "essentials/code", "essentials/images", "essentials/settings", "essentials/navigation"]
+      "group": "Product",
+      "pages": ["product/nhost-stack", "product/nhost-run"]
+    },
+    {
+      "group": "Platform",
+      "pages": [
+        "platform/compute-resources", 
+        "platform/service-replicas", 
+        {
+          "group": "Monitoring",
+          "pages": ["platform/metrics", "platform/logs"]
+        },
+        "platform/environment-variables", 
+        "platform/secrets", 
+        "platform/deployments", 
+        "platform/custom-domains"
+      ]
+    },
+    {
+      "group": "Development",
+      "pages": [{"group": "CLI", "pages":["Overview", "Local Dev", "Nhost Config", "Multiple Projects", "Overlays", "Seeds"]}, "Client SDKs"]
+    },
+    {
+      "group": "Howtos",
+      "pages": ["Multiple Environments"]
     },
     {
       "group": "API Documentation",
       "pages": ["api-reference/introduction"]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "auth",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        {
+          "group": "Email and Password", 
+          "pages": [
+            "api-reference/auth/sign-up-email-and-password",
+            "api-reference/auth/sign-in-email-and-password"
+          ]
+        },
+        {
+          "group": "Passwordless", 
+          "pages": [
+            "api-reference/auth/sign-in-email-passwordless",
+            "api-reference/auth/sign-in-sms-passwordless",
+            "api-reference/auth/sign-in-sms-passwordless-otp"
+          ]
+        },
+        {
+          "group": "OAuth", 
+          "pages": [
+            "api-reference/auth/sign-in-oauth-provider",
+            "api-reference/auth/oauth-callback-url-that-will-be-used-by-the-oauth-provider-to-redirect-to-the-client-application-attention:-all-providers-are-using-a-get-operation-except-apple-and-azure-ad-that-use-post"
+          ]
+        },
+        {
+          "group": "WebAuthn", 
+          "pages": [
+            "api-reference/auth/sign-up-using-email-via-fido2-webauthn-authentication",
+            "api-reference/auth/verfiy-fido2-webauthn-authentication-and-complete-signup",
+            "api-reference/auth/sign-in-using-email-via-fido2-webauthn-authentication",
+            "api-reference/auth/verfiy-fido2-webauthn-authentication-using-public-key-cryptography"
+          ]
+        },
+        {
+          "group": "Anonymous", 
+          "pages": [
+            "api-reference/auth/sign-in-anonymous",
+            "api-reference/auth/deanonymize-an-anonymous-user-in-adding-missing-email-or-email+password-depending-on-the-chosen-authentication-method-will-send-a-confirmation-email-if-the-server-is-configured-to-do-so"
+          ]
+        },
+        {
+          "group": "MFA", 
+          "pages": [
+            "api-reference/auth/generate-a-secret-to-request-the-activation-of-time-based-one-time-password-totp-multi-factor-authentication",
+            "api-reference/auth/sign-in-totp",
+            "api-reference/auth/activatedeactivate-multi-factor-authentication"
+          ]
+        },
+        {
+          "group": "User", 
+          "pages": [
+            "api-reference/auth/change-the-current-users-email",
+            "api-reference/auth/send-an-email-asking-the-user-to-reset-their-password",
+            "api-reference/auth/send-an-email-to-verify-the-account",
+            "api-reference/auth/set-a-new-password",
+            "api-reference/auth/get-user-information",
+            "api-reference/auth/refresh-the-oauth-access-tokens-of-a-given-user-you-must-be-an-admin-to-perform-this-operation",
+            "api-reference/auth/initialize-adding-of-a-new-webauthn-security-key-device-browser",
+            "api-reference/auth/verfiy-adding-of-a-new-webauth-security-key-device-browser"
+          ]
+        },
+        "api-reference/auth/sign-out"
+      ]
+    },
+    {                  
+      "group": "storage",
+      "pages": [
+        "api-reference/storage/storage/upload-files",
+        "api-reference/storage/storage/replace-file",
+        "api-reference/storage/storage/delete-a-file",
+        "api-reference/storage/storage/retrieve-contents-of-file",
+        "api-reference/storage/storage/retrieve-information-about-a-file",
+        "api-reference/storage/storage/retrieve-presigned-url-to-retrieve-the-file",
+        "api-reference/storage/storage/retrieve-contents-of-file-1"
       ]
     }
   ],
   "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "twitter": "https://twitter.com/nhost",
+    "github": "https://github.com/nhost",
+    "linkedin": "https://www.linkedin.com/company/nhost"
   }
 }

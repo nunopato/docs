@@ -1,0 +1,61 @@
+---
+title: 'React Quick Start'
+description: 'Get up and running with Nhost and React'
+---
+
+<Steps>
+  <Step title="Setup a Nhost Project">
+    if you haven't, create a project through the Nhost Dashboard.
+
+    After creating the project, run the following SQL:
+
+    ```sql SQL Editor
+     -- Create the table
+ 	CREATE TABLE countries (
+ 	id SERIAL PRIMARY KEY,
+   	name VARCHAR(255) NOT NULL
+	);
+ -- Insert some sample data into the table
+ INSERT INTO countries (name) VALUES ('United States');
+ INSERT INTO countries (name) VALUES ('Canada');
+ INSERT INTO countries (name) VALUES ('Mexico');
+    ```
+  </Step>
+  <Step title="Setup a React Application">
+    Create a React application using Vite
+    ```bash Terminal
+    npm create vite@latest my-app -- --template react
+    ```
+  </Step>
+  <Step title="Install @nhost/react">
+  ```bash Terminal
+  cd my-app && npm install @nhost/react
+  ```
+  </Step>
+  <Step title="Fetch Cities">
+  ```js index.js
+  import React from 'react'
+import ReactDOM from 'react-dom'
+
+import { NhostClient, NhostReactProvider } from '@nhost/react'
+
+import App from './App'
+
+const nhost = new NhostClient({
+  subdomain: '<Your Nhost app subdomain>',
+  region: '<Your Nhost app region>'
+})
+
+ReactDOM.render(
+	
+  <React.StrictMode>
+    <NhostReactProvider nhost={nhost}>
+      <App />
+    </NhostReactProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
+)
+  ```
+  </Step>
+</Steps>
+
