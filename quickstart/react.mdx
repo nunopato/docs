@@ -26,9 +26,8 @@ description: "Get up and running with Nhost and React"
   Add the following code to `src/App.jsx` that renders a Sign Up component.
 
   ```js src/App.jsx
-  import { NhostClient, NhostProvider, useSignOut } from "@nhost/react";
+  import { NhostClient, NhostProvider, useSignOut, useAuthenticationStatus, useUserData } from "@nhost/react";
   import React from "react";
-  import { useAuthenticationStatus, useUserData } from "@nhost/react";
   import { SignUp } from "./components/signup";
 
   const nhost = new NhostClient({
