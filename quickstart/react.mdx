@@ -74,15 +74,15 @@ description: "Get up and running with Nhost and React"
 
   export default App;
   ```
-  Find the **subdomain** on the project page and replace `<subdomain>` with it.
+  Replace `<subdomain>` with the actual `subdomain` from the project's page.
 
-  ![Project Homepage](./images/quickstarts/project-info-dashboard.png)
+  ![Project Homepage](/images/quickstarts/project-info-dashboard.png)
 
   </Step>
 
   <Step title="Add Sign Up component">
   Create a new file `components/signup.jsx` with the following content:
-  ```js components/signup.jsx
+  ```js src/components/signup.jsx
   import React, { useState } from "react";
   import { useSignUpEmailPassword } from "@nhost/react";
 
