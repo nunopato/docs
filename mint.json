@@ -75,7 +75,7 @@
     },
     {
       "group": "Development",
-      "pages": [{"group": "CLI", "pages":["Overview", "Local Dev", "Nhost Config", "Multiple Projects", "Overlays", "Seeds"]}, "Client SDKs"]
+      "pages": [{"group": "CLI", "pages":["./development/cli/overview", "./development/cli/installation", "Nhost Config", "Multiple Projects", "Overlays", "Seeds"]}, "Client SDKs"]
     },
     {
       "group": "Howtos",

@@ -1,61 +1,132 @@
 ---
-title: 'React Quick Start'
-description: 'Get up and running with Nhost and React'
+title: "React Quick Start"
+description: "Get up and running with Nhost and React"
 ---
 
 <Steps>
-  <Step title="Setup a Nhost Project">
-    if you haven't, create a project through the Nhost Dashboard.
-
-    After creating the project, run the following SQL:
-
-    ```sql SQL Editor
-     -- Create the table
- 	CREATE TABLE countries (
- 	id SERIAL PRIMARY KEY,
-   	name VARCHAR(255) NOT NULL
-	);
- -- Insert some sample data into the table
- INSERT INTO countries (name) VALUES ('United States');
- INSERT INTO countries (name) VALUES ('Canada');
- INSERT INTO countries (name) VALUES ('Mexico');
-    ```
+  <Step title="Create Project">
+    If you haven't, please create a project through the [Nhost Dashboard](https://app.nhost.io/new).
   </Step>
+
   <Step title="Setup a React Application">
-    Create a React application using Vite
-    ```bash Terminal
-    npm create vite@latest my-app -- --template react
+    Create a React application using Vite. 
+    ```bash Terminal 
+    npm create vite@latest my-app -- --template react 
     ```
   </Step>
-  <Step title="Install @nhost/react">
-  ```bash Terminal
-  cd my-app && npm install @nhost/react
+
+  <Step title="Install the Nhost package for React">
+  Navidate to the React application and install `@nhost/react`.
+  ```bash Terminal 
+  cd my-app && npm install @nhost/react 
   ```
   </Step>
-  <Step title="Fetch Cities">
-  ```js index.js
-  import React from 'react'
-import ReactDOM from 'react-dom'
 
-import { NhostClient, NhostReactProvider } from '@nhost/react'
+  <Step title="Update App.jsx">
+  Add the following code to `src/App.jsx` that renders a Sign Up component.
 
-import App from './App'
+  ```js src/App.jsx
+  import { NhostClient, NhostProvider, useSignOut } from "@nhost/react";
+  import React from "react";
+  import { useAuthenticationStatus, useUserData } from "@nhost/react";
+  import { SignUp } from "./components/signup";
 
-const nhost = new NhostClient({
-  subdomain: '<Your Nhost app subdomain>',
-  region: '<Your Nhost app region>'
-})
+  const nhost = new NhostClient({
+    subdomain: "<subdomain>",
+    region: "eu-central-1",
+  });
 
-ReactDOM.render(
-	
-  <React.StrictMode>
-    <NhostReactProvider nhost={nhost}>
-      <App />
-    </NhostReactProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
-)
+  function App() {
+    return (
+      <NhostProvider nhost={nhost}>
+        <div>
+          <Home />
+        </div>
+      </NhostProvider>
+    );
+  }
+
+  function Home() {
+    const userData = useUserData();
+    const { signOut } = useSignOut();
+    const { isAuthenticated, isLoading } = useAuthenticationStatus();
+
+    const handleLogout = async (e) => {
+      e.preventDefault();
+      await signOut();
+    };
+
+    if (isLoading) {
+      return <p>Loading...</p>;
+    }
+
+    if (isAuthenticated && userData) {
+      return (
+        <div>
+          <div>{userData.email}</div>
+          <button onClick={handleLogout}>logout</button>
+        </div>
+      );
+    }
+
+    return <SignUp />;
+  }
+
+  export default App;
   ```
+  Find the **subdomain** on the project page and replace `<subdomain>` with it.
+
+  ![Project Homepage](./images/quickstarts/project-info-dashboard.png)
+
+  </Step>
+
+  <Step title="Add Sign Up component">
+  Create a new file `components/signup.jsx` with the following content:
+  ```js components/signup.jsx
+  import React, { useState } from "react";
+  import { useSignUpEmailPassword } from "@nhost/react";
+
+  export function SignUp() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const { signUpEmailPassword, error } = useSignUpEmailPassword();
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      await signUpEmailPassword(email, password);
+      alert("You will receive an email to verify your account")
+    };
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <input
+          name="email"
+          type="email"
+          placeholder="you@example.com"
+          onChange={(e) => setEmail(e.target.value)}
+          id="email"
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="password"
+          onChange={(e) => setPassword(e.target.value)}
+          id="password"
+        />
+
+        <button type="submit">Sign In with email and password</button>
+        {error && <div>{error.message}</div>}
+      </form>
+    );
+  }
+  ```
+  </Step>
+  <Step title="Profit">
+  Run your project with `npm run dev -- --open --port 3000` and enter `http://localhost:3000` in your browser. 
+
+  New users can be found in the `Auth` tab of the project.
   </Step>
 </Steps>
 
+```
