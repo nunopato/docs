@@ -32,7 +32,7 @@
       "url": "api-reference"
     },
     {
-      "name": "Guides & Tutorials",
+      "name": "Guides",
       "url": "guides"
     }
   ],
@@ -60,7 +60,7 @@
     },
     {
       "group": "Product",
-      "pages": ["product/nhost-stack", "product/nhost-run"]
+      "pages": ["product/database", "product/graphql", "product/authentication", "product/storage", "product/functions", "product/run"]
     },
     {
       "group": "Platform",
@@ -78,8 +78,8 @@
       ]
     },
     {
-      "group": "Development",
-      "pages": [{"group": "CLI", "pages":["./development/cli/overview", "./development/cli/installation", "Nhost Config", "Multiple Projects", "Overlays", "Seeds"]}, "Client SDKs"]
+      "group": "Development & CLI",
+      "pages": ["/development/cli/overview", "/development/cli/getting-started", "/development/cli/commands", "/development/cli/recommended-workflow"]
     },
     {
       "group": "Howtos",
@@ -88,6 +88,37 @@
     {
       "group": "API Documentation",
       "pages": ["api-reference/introduction"]
+    },
+    {
+      "group": "Frameworks",
+      "pages": ["guides/overview", "guides/react", "guides/nextjs"]
+    },
+    {
+      "group": "Database",
+      "pages": ["guides/database/configuring-postgres", "guides/database/extensions", "guides/database/performance"]
+    },
+    {
+      "group": "Authentication",
+      "pages": [
+        { 
+          "group": "Social Sign In", 
+          "pages": [
+            "guides/auth/social/signin-apple", 
+            "guides/auth/social/signin-discord", 
+            "guides/auth/social/signin-facebook", 
+            "guides/auth/social/signin-github", 
+            "guides/auth/social/signin-google", 
+            "guides/auth/social/signin-linkedin", 
+            "guides/auth/social/signin-spotify", 
+            "guides/auth/social/signin-twitch", 
+            "guides/auth/social/signin-workos"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "API / Hasura",
+      "pages": ["guides/api/configuring-hasura", "guides/api/permissions"]
     },
     {
       "group": "auth",
