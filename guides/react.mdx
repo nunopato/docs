@@ -1,6 +1,6 @@
 ---
 title: Build a Todo Manager with React
-description: Learn how to use React with Nhost
+description: Learn how to use Nhost with React
 sidebarTitle: React
 ---
 
@@ -87,6 +87,10 @@ Click on the right cell for the `user` role and action `insert` and set permissi
 Click on the right cell for the `user` role and action `select` and set permissions as follows:
 ![User Select](/images/guides/todos-react-permissions-select.png)
 </Tab>
+<Tab title="update">
+Click on the right cell for the `user` role and action `update` and set permissions as follows:
+![User Select](/images/guides/todos-react-permissions-update.png)
+</Tab>
 <Tab title="delete">
 Click on the right cell for the `user` role and action `delete` and set permissions as follows:
 ![User Delete](/images/guides/todos-react-permissions-delete.png)
@@ -112,12 +116,16 @@ Click on the right cell for the `user` role and action `delete` and set permissi
 </Tab>
 </Tabs>
 
+### Enable Sign In with Magic Link 
+
+By default, Nhost has sign in with Magic Link disabled. To enable it, head to your project's **Settings -> Sign-In Methods**, toggle Magic Link and save.
 
 ### Recap
 
 - you have created your first Nhost project
 - you have created a database table called `todos`
 - you have set permissions for both `todos` and `files`
+- you have enabled Magic Link
 
 
 ## Setup React Application
@@ -185,7 +193,8 @@ export default function SignIn() {
     const { error } = await signInEmailPasswordless(email)
 
     if (error) {
-      alert(error.message)
+      console.error({ error })
+      return
     }
 
     setLoading(false)
@@ -194,27 +203,25 @@ export default function SignIn() {
 
   return (
     <div>
-      <div>
-        <h1>Nhost + React</h1>
-        <p>Sign in via magic link with your email below</p>
-        <form onSubmit={handleSignIn}>
-          <div>
-            <input
-              type="email"
-              placeholder="Your email"
-              value={email}
-              required={true}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <button disabled={loading}>
-              {loading ? <span>Loading</span> : <span>Sign In with a Magic Link</span>}
-            </button>
-          </div>
-          {error && <p>{error.message}</p>}
-        </form>
-      </div>
+      <h1>Todo Manager</h1>
+      <p>powered by Nhost and React</p>
+      <form onSubmit={handleSignIn}>
+        <div>
+          <input
+            type="email"
+            placeholder="Your email"
+            value={email}
+            required={true}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <button disabled={loading}>
+            {loading ? <span>Loading</span> : <span>Send me a Magic Link!</span>}
+          </button>
+        </div>
+        {error && <p>{error.message}</p>}
+      </form>
     </div>
   )
 }
@@ -239,7 +246,6 @@ const createTodo = `
     mutation($title: String!, $file_id: uuid) {
       insert_todos_one(object: {title: $title, file_id: $file_id}) {
         id
-        title
       }
     }
   `
@@ -249,6 +255,7 @@ const getTodos = `
         id
         title
         file_id
+        completed
       }
     }
   `
@@ -258,19 +265,19 @@ export default function Todos() {
   const [todos, setTodos] = useState([])
 
   const [todoTitle, setTodoTitle] = useState('')
-  const [todoFile, setTodoFile] = useState(null)
+  const [todoAttachment, setTodoAttachment] = useState(null)
   const [fetchAll, setFetchAll] = useState(false)
 
   const nhostClient = useNhostClient()
   const { upload } = useFileUpload()
 
   useEffect(() => {
-    async function renderTodos() {
+    async function fetchTodos() {
       setLoading(true)
       const { data, error } = await nhostClient.graphql.request(getTodos)
 
       if (error) {
-        console.log({ error })
+        console.error({ error })
         return
       }
 
@@ -278,7 +285,7 @@ export default function Todos() {
       setLoading(false)
     }
 
-    renderTodos()
+    fetchTodos()
 
     return () => {
       setFetchAll(false)
@@ -290,11 +297,14 @@ export default function Todos() {
     e.preventDefault()
 
     let todo = { title: todoTitle }
-    if (todoFile) {
-      const { id, isError } = await upload({ file: todoFile, name: todoFile.name })
+    if (todoAttachment) {
+      const { id, error } = await upload({
+        file: todoAttachment,
+        name: todoAttachment.name
+      })
 
-      if (isError) {
-        console.log({ isError })
+      if (error) {
+        console.error({ error })
         return
       }
 
@@ -304,11 +314,11 @@ export default function Todos() {
     const { error } = await nhostClient.graphql.request(createTodo, todo)
 
     if (error) {
-      console.log({ error })
+      console.error({ error })
     }
 
     setTodoTitle('')
-    setTodoFile(null)
+    setTodoAttachment(null)
     setFetchAll(true)
   }
 
@@ -324,7 +334,26 @@ export default function Todos() {
 
     const { error } = await nhostClient.graphql.request(deleteTodo, { id })
     if (error) {
-      console.log({ error })
+      console.error({ error })
+    }
+
+    setFetchAll(true)
+  }
+
+  const completeTodo = async (id) => {
+    const { error } = await nhostClient.graphql.request(
+      `
+      mutation($id: uuid!) {
+        update_todos_by_pk(pk_columns: {id: $id}, _set: {completed: true}) {
+          completed
+        }
+      }
+    `,
+      { id }
+    )
+
+    if (error) {
+      console.error({ error })
     }
 
     setFetchAll(true)
@@ -335,15 +364,9 @@ export default function Todos() {
       fileId: todo.file_id
     })
 
-    nhostClient.storage.getPresignedUrl()
-
     if (error) {
-      return (
-        <div>
-          <p>error</p>
-          <p>{error.message}</p>
-        </div>
-      )
+      console.error({ error })
+      return
     }
 
     window.open(presignedUrl.url, '_blank')
@@ -358,6 +381,7 @@ export default function Todos() {
             <div className="input-group">
               <label htmlFor="title">Title</label>
               <input
+                id="title"
                 type="text"
                 placeholder="Title"
                 value={todoTitle}
@@ -366,7 +390,7 @@ export default function Todos() {
             </div>
             <div className="input-group">
               <label htmlFor="file">File (optional)</label>
-              <input type="file" onChange={(e) => setTodoFile(e.target.files[0])} />
+              <input id="file" type="file" onChange={(e) => setTodoAttachment(e.target.files[0])} />
             </div>
             <div className="submit-group">
               <button type="submit" disabled={!todoTitle}>
@@ -379,16 +403,21 @@ export default function Todos() {
           {(!loading &&
             todos.map((todo) => (
               <div className="todo-item" key={todo.id ?? 0}>
-                <input type="checkbox" id={`todo-${todo.id}`} />
-
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  disabled={todo.completed}
+                  id={`todo-${todo.id}`}
+                  onChange={() => completeTodo(todo.id)}
+                />
                 {todo.file_id && (
                   <span>
                     <a onClick={() => openAttachment(todo)}> Open Attachment</a>
                   </span>
                 )}
-
                 <label htmlFor={`todo-${todo.id}`} className="todo-title">
-                  {todo.title}
+                  {todo.completed && <s>{todo.title}</s>}
+                  {!todo.completed && todo.title}
                 </label>
                 <button type="button" onClick={() => handleDeleteTodo(todo.id)}>
                   Delete
@@ -433,8 +462,6 @@ function App() {
       setSession(session)
     })
   }, [])
-
-  console.log({ session })
 
   return (
     <NhostProvider nhost={nhost}>
