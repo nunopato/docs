@@ -43,7 +43,7 @@ On your new project, navigate to **Database** and create a new table called `tod
 
 ![Database](/images/guides/todos-react-database.png)
 
-You can either copy and paste the following SQL into the SQL Editor, **Database -> SQL Editor** (bottom left), or you can create the table manually by clicking on **New Table**.
+You can either copy and paste the following SQL into the SQL Editor, **Database -> SQL Editor** (bottom left), or manually create the table by clicking on **New Table**.
 
 <Tabs>
   <Tab title="SQL Editor">
@@ -59,8 +59,8 @@ You can either copy and paste the following SQL into the SQL Editor, **Database 
       file_id uuid,
       user_id uuid NOT NULL,
       PRIMARY KEY (id),
-      FOREIGN KEY (file_id) REFERENCES storage.files (id) ON UPDATE RESTRICT ON DELETE RESTRICT 
-      FOREIGN KEY (user_id) REFERENCES auth.users (id) ON UPDATE RESTRICT ON DELETE RESTRICT 
+      FOREIGN KEY (file_id) REFERENCES storage.files (id) ON UPDATE SET NULL ON DELETE SET NULL,
+      FOREIGN KEY (user_id) REFERENCES auth.users (id) ON UPDATE SET NULL ON DELETE SET NULL 
     ); 
     ```
   </Tab>
@@ -72,11 +72,13 @@ You can either copy and paste the following SQL into the SQL Editor, **Database 
   </Tab>
 </Tabs>
 
+You should now see a new table called `todos` on the left panel, above **New Table**.
+
 ### Set permissions for todos
 
-You will now set permission rules for the table you just created. Go ahead and click on **...**, followed by **Edit Permissions**. 
+It's now time to set permission rules for the table you just created. With the table `todos` selected, click on **...**, followed by **Edit Permissions**. 
 
-We want to set permissions for the `user` role and actions `insert`, `select`, `update`, and `delete`. 
+You will set permissions for the `user` role and actions `insert`, `select`, `update`, and `delete`. 
 
 <Tabs>
 <Tab title="insert">
@@ -99,7 +101,11 @@ Click on the right cell for the `user` role and action `delete` and set permissi
 
 ### Set permissions for files
 
-The `files` table is managed by Nhost and is defined on the `storage` schema. Click on the dropdown right next to `schema.public` and change to `schema.storage`.
+The `files` table is managed by Nhost and is defined on the `storage` schema. Click on the dropdown right next to `schema.public` and choose `schema.storage`.
+
+With the `files` table selected, click on **...**, followed by **Edit Permissions**.
+
+As before, we want to set permissions for the `user` role and actions `insert`, `select`, `delete`. 
 
 <Tabs>
 <Tab title="insert">
@@ -122,19 +128,28 @@ By default, Nhost has sign in with Magic Link disabled. To enable it, head to yo
 
 ### Recap
 
-- you have created your first Nhost project
-- you have created a database table called `todos`
-- you have set permissions for both `todos` and `files`
-- you have enabled Magic Link
+<Steps>
+<Step title="Nhost project created">
+</Step>
+
+<Step title="Database todos created">
+</Step>
+
+<Step title="Permissions set for todos and files">
+</Step>
+
+<Step title="Magic Link enabled">
+</Step>
+</Steps>
 
 
 ## Setup React Application
 
-Now that we have Nhost configured, we will move on to setup the React application with the Nhost JavaScript client SDK.
+Now that we have Nhost configured, let's move on to setup the React application and the Nhost client.
 
 ### Create React Application
 
-Run the following command in your terminal to create a React application with Vite.
+Run the following command in your terminal to create a React application using Vite.
 
 ```bash Terminal
 npm create vite@latest todos-react -- --template react
@@ -150,9 +165,9 @@ cd todos-react && npm install @nhost/react
 
 #### Configure the Nhost Client
 
-Create a new file, `./src/utils/nhost.js`, with the following code to create a client that you will use to interact with your Nhost backend.
+Create a new file, `./src/lib/nhost.js`, with the following code to create a client that will be used to interact with the Nhost backend.
 
-```ts ./src/utils/nhost.ts
+```ts ./src/lib/nhost.ts
 import { NhostClient } from "@nhost/react";
 
 export const nhost = new NhostClient({
@@ -161,20 +176,20 @@ export const nhost = new NhostClient({
 });
 ```
 
-The client requires the `subdomain` and `region` of your new project. Please create a new `.env.local` file with the right configuration for your project.
+The client requires the `subdomain` and `region` of the new project. Please create a new `.env.local` file with the right configuration for your project.
 
 ```bash .env
 VITE_NHOST_SUBDOMAIN=<subdomain>
 VITE_NHOST_REGION=<region>
 ```
 
-You can find the `subdomain` and `region` for your new project in the project's homepage in the Nhost Dashboard.
+You can find the `subdomain` and `region` in the project's homepage in the Nhost Dashboard.
 
 ### Setup Sign In Component
 
 It is time to setup a new React component to handle the login functionality. Your users will be able to sign in using a Magic Link and without a password.
 
-Create the component `./src/signin.jsx` with the following content:
+Create a new file `./src/signin.jsx` for the Sign In component with the following content:
 
 ```js ./src/signin.jsx
 import { useState } from 'react'
@@ -231,7 +246,7 @@ export default function SignIn() {
 
 Now that users can sign in, go ahead and create the authenticated page that lists a user's todos and has a form for managing todos with attachments.
 
-```js ./todos.jsx
+```js ./src/todos.jsx
 import { useState, useEffect } from 'react'
 import { useNhostClient, useFileUpload } from '@nhost/react'
 
@@ -442,14 +457,14 @@ export default function Todos() {
 ```
 
 
-With all components in place, we just need to update `./src/App.jsx` to use the new components:
+Finally, with all components in place, the only thing missing is to update `./src/App.jsx` to use the new components:
 
 ```js ./src/App.jsx
 import './App.css'
 import { NhostProvider } from '@nhost/react'
 import { nhost } from './lib/nhost.js'
-import SignIn from './SignIn'
-import Todos from './Todos'
+import SignIn from './signin'
+import Todos from './todos'
 import { useEffect, useState } from 'react'
 
 function App() {
@@ -478,7 +493,7 @@ export default App
 Run the Todo Manager with:
 
 ```bash Terminal
-npm run dev --port 3000
+npm run dev -- --open --port 3000
 ```
 
 Open your browser on [localhost:3000](localhost:3000) to see your new application in action.
